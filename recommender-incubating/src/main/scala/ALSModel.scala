@@ -67,6 +67,6 @@ object ALSModel
   }
 
   def modelPath(): String = {
-    return "/root/engines/INVALID_STACK_NAME/recommender-incubating/model"
+    return "/root/engines/electra_sandbox/recommender-incubating/model"
   }
 }
