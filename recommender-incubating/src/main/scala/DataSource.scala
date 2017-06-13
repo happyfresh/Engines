@@ -37,7 +37,7 @@ class DataSource(val dsp: DataSourceParams)
     val ratingsRDD: RDD[Rating] = eventsRDD.map { event =>
       val rating = try {
         val ratingValue: Double = event.event match {
-          case "buy" => 2.0 // map buy event to rating value of 4
+          case "buy" => 4.0 // map buy event to rating value of 4
           case _ => throw new Exception(s"Unexpected event ${event} is read.")
         }
         // entityId and targetEntityId is String

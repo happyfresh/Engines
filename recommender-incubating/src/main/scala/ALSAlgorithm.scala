@@ -50,22 +50,22 @@ class ALSAlgorithm(val ap: ALSAlgorithmParams)
 
     // If you only have one type of implicit event (Eg. "view" event only),
     // replace ALS.train(...) with
-    //val m = ALS.trainImplicit(
-      //ratings = mllibRatings,
-      //rank = ap.rank,
-      //iterations = ap.numIterations,
-      //lambda = ap.lambda,
-      //blocks = -1,
-      //alpha = 1.0,
-      //seed = seed)
-
-    val m = ALS.train(
+    val m = ALS.trainImplicit(
       ratings = mllibRatings,
       rank = ap.rank,
       iterations = ap.numIterations,
       lambda = ap.lambda,
       blocks = -1,
+      alpha = 1.0,
       seed = seed)
+
+    // val m = ALS.train(
+    //   ratings = mllibRatings,
+    //   rank = ap.rank,
+    //   iterations = ap.numIterations,
+    //   lambda = ap.lambda,
+    //   blocks = -1,
+    //   seed = seed)
 
     new ALSModel(
       rank = m.rank,
