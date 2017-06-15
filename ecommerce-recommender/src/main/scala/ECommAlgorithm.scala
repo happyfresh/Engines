@@ -416,6 +416,7 @@ class ECommAlgorithm(val ap: ECommAlgorithmParams)
           i = i,
           item = pm.item,
           categories = query.categories,
+          stores = query.stores,
           whiteList = whiteList,
           blackList = blackList
         )
@@ -448,6 +449,7 @@ class ECommAlgorithm(val ap: ECommAlgorithmParams)
           i = i,
           item = pm.item,
           categories = query.categories,
+          stores = query.stores,
           whiteList = whiteList,
           blackList = blackList
         )
@@ -479,6 +481,7 @@ class ECommAlgorithm(val ap: ECommAlgorithmParams)
           i = i,
           item = pm.item,
           categories = query.categories,
+          stores = query.stores,
           whiteList = whiteList,
           blackList = blackList
         )
@@ -554,6 +557,7 @@ class ECommAlgorithm(val ap: ECommAlgorithmParams)
     i: Int,
     item: Item,
     categories: Option[Set[String]],
+    stores: Option[Set[String]],
     whiteList: Option[Set[Int]],
     blackList: Set[Int]
   ): Boolean = {
@@ -566,8 +570,11 @@ class ECommAlgorithm(val ap: ECommAlgorithmParams)
         // keep this item if has ovelap categories with the query
         !(itemCat.toSet.intersect(cat).isEmpty)
       }.getOrElse(false) // discard this item if it has no categories
+    }.getOrElse(true) &&
+    stores.map { storeName =>
+      item.stores.map { itemStoreName =>
+        !(itemStoreName.toSet.intersect(storeName).isEmpty)
+      }.getOrElse(false)
     }.getOrElse(true)
-
   }
-
 }
