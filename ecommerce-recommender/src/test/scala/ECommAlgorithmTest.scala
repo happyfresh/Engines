@@ -29,9 +29,9 @@ class ECommAlgorithmTest
   val users = Map("u0" -> User(), "u1" -> User())
 
 
-  val i0 = Item(categories = Some(List("c0", "c1")))
-  val i1 = Item(categories = None)
-  val i2 = Item(categories = Some(List("c0", "c2")))
+  val i0 = Item(categories = Some(List("c0", "c1")), stores = Some(List("s0", "s1")))
+  val i1 = Item(categories = None, stores = None)
+  val i2 = Item(categories = Some(List("c0", "c2")), stores = Some(List("s0", "s1")))
 
   val items = Map(
     "i0" -> i0,
