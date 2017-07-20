@@ -44,12 +44,11 @@ object RecommendationEvaluation extends Evaluation {
   engineEvaluator = (
     RecommendationEngine(),
     MetricEvaluator(
-      metric = PrecisionAtK(k = 10, ratingThreshold = 4.0),
+      metric = PrecisionAtK(k = 10),
       otherMetrics = Seq(
-        PositiveCount(),
+        PositiveCount()
       )))
 }
-
 
 object ComprehensiveRecommendationEvaluation extends Evaluation {
   val ratingThresholds = Seq(0)
