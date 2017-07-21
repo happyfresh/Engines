@@ -12,14 +12,14 @@ import org.apache.predictionio.controller.MetricEvaluator
 // $ pio eval org.example.recommendation.RecommendationEvaluation \
 //   org.example.recommendation.EngineParamsList
 
-case class PrecisionAtK(k: Int, ratingThreshold: Double = 2.0)
+case class PrecisionAtK(k: Int)
     extends OptionAverageMetric[EmptyEvaluationInfo, Query, PredictedResult, ActualResult] {
   require(k > 0, "k must be greater than 0")
 
-  override def header = s"Precision@K (k=$k, threshold=$ratingThreshold)"
+  override def header = s"Precision@K (k=$k)"
 
   def calculate(q: Query, p: PredictedResult, a: ActualResult): Option[Double] = {
-    val positives: Set[String] = a.ratings.filter(_.rating >= ratingThreshold).map(_.item).toSet
+    val positives: Set[String] = a.ratings.map(_.item).toSet
 
     // If there is no positive results, Precision is undefined. We don't consider this case in the
     // metrics, hence we return None.
@@ -31,12 +31,12 @@ case class PrecisionAtK(k: Int, ratingThreshold: Double = 2.0)
   }
 }
 
-case class PositiveCount(ratingThreshold: Double = 2.0)
+case class PositiveCount()
     extends AverageMetric[EmptyEvaluationInfo, Query, PredictedResult, ActualResult] {
-  override def header = s"PositiveCount (threshold=$ratingThreshold)"
+  override def header = s"PositiveCount"
 
   def calculate(q: Query, p: PredictedResult, a: ActualResult): Double = {
-    a.ratings.filter(_.rating >= ratingThreshold).size
+    a.ratings.size
   }
 }
 
@@ -44,28 +44,23 @@ object RecommendationEvaluation extends Evaluation {
   engineEvaluator = (
     RecommendationEngine(),
     MetricEvaluator(
-      metric = PrecisionAtK(k = 10, ratingThreshold = 4.0),
+      metric = PrecisionAtK(k = 10),
       otherMetrics = Seq(
-        PositiveCount(ratingThreshold = 4.0),
-        PrecisionAtK(k = 10, ratingThreshold = 2.0),
-        PositiveCount(ratingThreshold = 2.0),
-        PrecisionAtK(k = 10, ratingThreshold = 1.0),
-        PositiveCount(ratingThreshold = 1.0)
+        PositiveCount()
       )))
 }
 
-
 object ComprehensiveRecommendationEvaluation extends Evaluation {
-  val ratingThresholds = Seq(0.0, 2.0, 4.0)
+  val ratingThresholds = Seq(0)
   val ks = Seq(1, 3, 10)
 
   engineEvaluator = (
     RecommendationEngine(),
     MetricEvaluator(
-      metric = PrecisionAtK(k = 3, ratingThreshold = 2.0),
+      metric = PrecisionAtK(k = 3),
       otherMetrics = (
-        (for (r <- ratingThresholds) yield PositiveCount(ratingThreshold = r)) ++
-        (for (r <- ratingThresholds; k <- ks) yield PrecisionAtK(k = k, ratingThreshold = r))
+        (for (r <- ratingThresholds) yield PositiveCount()) ++
+        (for (r <- ratingThresholds; k <- ks) yield PrecisionAtK(k = k))
       )))
 }
 

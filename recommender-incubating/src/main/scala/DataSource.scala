@@ -35,22 +35,23 @@ class DataSource(val dsp: DataSourceParams)
       targetEntityType = Some(Some("item")))(sc)
 
     val ratingsRDD: RDD[Rating] = eventsRDD.map { event =>
-      val rating = try {
+      try {
         val ratingValue: Double = event.event match {
-          case "buy" => 4.0 // map buy event to rating value of 4
+          case "buy" => 1.0 // map buy event to rating value of 4
           case _ => throw new Exception(s"Unexpected event ${event} is read.")
         }
-        // entityId and targetEntityId is String
-        Rating(event.entityId,
-          event.targetEntityId.get,
-          ratingValue)
+
+        ((event.entityId, event.targetEntityId.get), ratingValue)
       } catch {
         case e: Exception => {
           logger.error(s"Cannot convert ${event} to Rating. Exception: ${e}.")
           throw e
         }
       }
-      rating
+    }
+    .reduceByKey { case (a, b) => a + b }
+    .map { case ((uid, iid), r) =>
+      Rating(uid, iid, r)
     }.cache()
 
     ratingsRDD
