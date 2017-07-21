@@ -50,7 +50,6 @@ object RecommendationEvaluation extends Evaluation {
       )))
 }
 
-
 object ComprehensiveRecommendationEvaluation extends Evaluation {
   val ratingThresholds = Seq(0)
   val ks = Seq(1, 3, 10)
