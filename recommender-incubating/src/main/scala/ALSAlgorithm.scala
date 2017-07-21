@@ -48,24 +48,20 @@ class ALSAlgorithm(val ap: ALSAlgorithmParams)
     // seed for MLlib ALS
     val seed = ap.seed.getOrElse(System.nanoTime)
 
-    // If you only have one type of implicit event (Eg. "view" event only),
-    // replace ALS.train(...) with
-    //val m = ALS.trainImplicit(
-      //ratings = mllibRatings,
-      //rank = ap.rank,
-      //iterations = ap.numIterations,
-      //lambda = ap.lambda,
-      //blocks = -1,
-      //alpha = 1.0,
-      //seed = seed)
+    val implicitPrefs = true
 
-    val m = ALS.train(
-      ratings = mllibRatings,
-      rank = ap.rank,
-      iterations = ap.numIterations,
-      lambda = ap.lambda,
-      blocks = -1,
-      seed = seed)
+    val als = new ALS()
+    als.setUserBlocks(-1)
+    als.setProductBlocks(-1)
+    als.setRank(ap.rank)
+    als.setIterations(ap.numIterations)
+    als.setLambda(ap.lambda)
+    als.setImplicitPrefs(implicitPrefs)
+    als.setAlpha(1.0)
+    als.setSeed(seed)
+    als.setCheckpointInterval(10)
+
+    val m = als.run(mllibRatings)
 
     new ALSModel(
       rank = m.rank,
@@ -84,10 +80,10 @@ class ALSAlgorithm(val ap: ALSAlgorithmParams)
       // index. Convert it to String ID for returning PredictedResult
       val itemScores = model.recommendProducts(userInt, query.num)
         .map (r => ItemScore(itemIntStringMap(r.product), r.rating))
-      new PredictedResult(itemScores)
+      PredictedResult(itemScores)
     }.getOrElse{
       logger.info(s"No prediction for unknown user ${query.user}.")
-      new PredictedResult(Array.empty)
+      PredictedResult(Array.empty)
     }
   }
 
