@@ -13,7 +13,7 @@
       "params": {
         "basketWindow" : 120,
         "maxRuleLength" : 2,
-        "minSupport": 0.0005,
+        "minSupport": 0.000085,
         "minConfidence": 0.08,
         "minLift" : 1.0,
         "minBasketSize" : 2,
