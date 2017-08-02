@@ -38,7 +38,7 @@ class Algorithm(val ap: AlgorithmParams)
       .sortBy(_._3)
       .map(x => {
         new ConsequentItem(x._2, x._3)
-      })
+      }).reverse.take(query.num)
 
     PredictedResult(result.toArray)
   }

@@ -2,7 +2,7 @@ package org.example.fpgrowth
 
 import org.apache.predictionio.controller.{Engine, EngineFactory}
 
-case class Query(items: Array[String]) extends Serializable
+case class Query(items: Set[String], num: Int) extends Serializable
 
 case class PredictedResult(consequentItems: Array[ConsequentItem]) extends Serializable
 
