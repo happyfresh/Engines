@@ -1,0 +1,19 @@
+{
+  "id": "default",
+  "description": "Default settings",
+  "engineFactory": "org.example.fpgrowth.FPGrowthEngine",
+  "datasource": {
+    "params" : {
+      "appName": "RecommenderElectraSandbox"
+    }
+  },
+  "algorithms": [
+    {
+      "name": "algo",
+      "params": {
+        "minSupport": 0.00008,
+        "minConfidence": 0.03
+      }
+    }
+  ]
+}
