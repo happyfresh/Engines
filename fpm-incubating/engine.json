@@ -4,7 +4,7 @@
   "engineFactory": "org.example.fpgrowth.FPGrowthEngine",
   "datasource": {
     "params" : {
-      "appName": "INVALID_APP_NAME"
+      "appName": "RecommenderATeamSandbox"
     }
   },
   "algorithms": [
