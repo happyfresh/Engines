@@ -17,7 +17,7 @@ class Algorithm(val ap: AlgorithmParams)
     val transactions = data.events
       .map(event => ((event.user, event.t), event.item))
       .groupByKey()
-      .map(_._2.toArray).cache()
+      .map(_._2.toSet.toArray).cache()
 
     val fpg = new FPGrowth().setMinSupport(ap.minSupport)
     val model = fpg.run(transactions)
