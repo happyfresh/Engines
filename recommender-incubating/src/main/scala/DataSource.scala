@@ -23,7 +23,7 @@ class DataSource(val dsp: DataSourceParams)
   extends PDataSource[TrainingData,
       EmptyEvaluationInfo, Query, ActualResult] {
 
-  @transient lazy val logger = Logger[this.type]
+  @transient lazy val logger: Logger = Logger[this.type]
 
   def getRatings(sc: SparkContext): RDD[Rating] = {
 
@@ -97,7 +97,7 @@ case class Rating(
 class TrainingData(
   val ratings: RDD[Rating]
 ) extends Serializable {
-  override def toString = {
+  override def toString: String = {
     s"ratings: [${ratings.count()}] (${ratings.take(2).toList}...)"
   }
 }

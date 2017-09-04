@@ -23,10 +23,10 @@ case class PrecisionAtK(k: Int)
 
     // If there is no positive results, Precision is undefined. We don't consider this case in the
     // metrics, hence we return None.
-    if (positives.size == 0) {
+    if (positives.isEmpty) {
       None
     }
-    val tpCount: Int = p.itemScores.take(k).filter(is => positives(is.item)).size
+    val tpCount: Int = p.itemScores.take(k).count(is => positives(is.item))
     Some(tpCount.toDouble / math.min(k, positives.size))
   }
 }
@@ -36,7 +36,7 @@ case class PositiveCount()
   override def header = s"PositiveCount"
 
   def calculate(q: Query, p: PredictedResult, a: ActualResult): Double = {
-    a.ratings.size
+    a.ratings.length
   }
 }
 

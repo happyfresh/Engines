@@ -22,7 +22,7 @@ case class ALSAlgorithmParams(
 class ALSAlgorithm(val ap: ALSAlgorithmParams)
   extends PAlgorithm[PreparedData, ALSModel, Query, PredictedResult] {
 
-  @transient lazy val logger = Logger[this.type]
+  @transient lazy val logger: Logger = Logger[this.type]
 
   if (ap.numIterations > 30) {
     logger.warn(
