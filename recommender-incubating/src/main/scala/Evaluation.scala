@@ -12,14 +12,14 @@ import org.apache.predictionio.controller.MetricEvaluator
 // $ pio eval org.example.recommendation.RecommendationEvaluation \
 //   org.example.recommendation.EngineParamsList
 
-case class PrecisionAtK(k: Int)
+case class PrecisionAtK(k: Int, ratingThreshold: Double = 0.1)
     extends OptionAverageMetric[EmptyEvaluationInfo, Query, PredictedResult, ActualResult] {
   require(k > 0, "k must be greater than 0")
 
-  override def header = s"Precision@K (k=$k)"
+  override def header = s"Precision@K (k=$k, threshold=$ratingThreshold)"
 
   def calculate(q: Query, p: PredictedResult, a: ActualResult): Option[Double] = {
-    val positives: Set[String] = a.ratings.map(_.item).toSet
+    val positives: Set[String] = a.ratings.filter(_.rating >= ratingThreshold).map(_.item).toSet
 
     // If there is no positive results, Precision is undefined. We don't consider this case in the
     // metrics, hence we return None.
@@ -31,39 +31,12 @@ case class PrecisionAtK(k: Int)
   }
 }
 
-case class PositiveCount()
-    extends AverageMetric[EmptyEvaluationInfo, Query, PredictedResult, ActualResult] {
-  override def header = s"PositiveCount"
-
-  def calculate(q: Query, p: PredictedResult, a: ActualResult): Double = {
-    a.ratings.length
-  }
-}
-
 object RecommendationEvaluation extends Evaluation {
   engineEvaluator = (
     RecommendationEngine(),
-    MetricEvaluator(
-      metric = PrecisionAtK(k = 10),
-      otherMetrics = Seq(
-        PositiveCount()
-      )))
+    MetricEvaluator(metric = PrecisionAtK(k = 10))
+  )
 }
-
-object ComprehensiveRecommendationEvaluation extends Evaluation {
-  val ratingThresholds = Seq(0)
-  val ks = Seq(1, 3, 10)
-
-  engineEvaluator = (
-    RecommendationEngine(),
-    MetricEvaluator(
-      metric = PrecisionAtK(k = 3),
-      otherMetrics = (
-        (for (r <- ratingThresholds) yield PositiveCount()) ++
-        (for (r <- ratingThresholds; k <- ks) yield PrecisionAtK(k = k))
-      )))
-}
-
 
 trait BaseEngineParamsList extends EngineParamsGenerator {
   protected val baseEP = EngineParams(
