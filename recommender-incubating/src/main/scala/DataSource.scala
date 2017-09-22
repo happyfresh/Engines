@@ -6,12 +6,11 @@ import org.apache.predictionio.controller.EmptyActualResult
 import org.apache.predictionio.controller.Params
 import org.apache.predictionio.data.storage.Event
 import org.apache.predictionio.data.store.PEventStore
-
 import org.apache.spark.SparkContext
 import org.apache.spark.SparkContext._
 import org.apache.spark.rdd.RDD
-
 import grizzled.slf4j.Logger
+import org.apache.spark.storage.StorageLevel
 
 case class DataSourceEvalParams(kFold: Int, queryNum: Int)
 
@@ -52,7 +51,7 @@ class DataSource(val dsp: DataSourceParams)
     .reduceByKey { case (a, b) => a + b }
     .map { case ((uid, iid), r) =>
       Rating(uid, iid, r)
-    }.cache()
+    }.persist(StorageLevel.MEMORY_AND_DISK)
 
     ratingsRDD
   }
@@ -70,7 +69,7 @@ class DataSource(val dsp: DataSourceParams)
 
     val kFold = evalParams.kFold
     val ratings: RDD[(Rating, Long)] = getRatings(sc).zipWithUniqueId
-    ratings.cache
+    ratings.persist(StorageLevel.MEMORY_AND_DISK)
 
     (0 until kFold).map { idx => {
       val trainingRatings = ratings.filter(_._2 % kFold != idx).map(_._1)

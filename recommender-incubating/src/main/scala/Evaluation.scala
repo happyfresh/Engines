@@ -1,19 +1,12 @@
 package org.example.recommendation
 
-import org.apache.predictionio.controller.Evaluation
-import org.apache.predictionio.controller.OptionAverageMetric
-import org.apache.predictionio.controller.AverageMetric
-import org.apache.predictionio.controller.EmptyEvaluationInfo
-import org.apache.predictionio.controller.EngineParamsGenerator
-import org.apache.predictionio.controller.EngineParams
-import org.apache.predictionio.controller.MetricEvaluator
+import org.apache.predictionio.controller._
 
 // Usage:
 // $ pio eval org.example.recommendation.RecommendationEvaluation \
 //   org.example.recommendation.EngineParamsList
 
-case class PrecisionAtK(k: Int, ratingThreshold: Double = 0.1)
-    extends OptionAverageMetric[EmptyEvaluationInfo, Query, PredictedResult, ActualResult] {
+case class PrecisionAtK(k: Int, ratingThreshold: Double = 0.1) extends OptionAverageMetric[EmptyEvaluationInfo, Query, PredictedResult, ActualResult] {
   require(k > 0, "k must be greater than 0")
 
   override def header = s"Precision@K (k=$k, threshold=$ratingThreshold)"
@@ -46,9 +39,9 @@ trait BaseEngineParamsList extends EngineParamsGenerator {
 }
 
 object EngineParamsList extends BaseEngineParamsList {
-  engineParamsList = for(
-    rank <- Seq(5, 10, 20);
-    numIterations <- Seq(1, 5, 10))
+  engineParamsList = for (
+    rank <- Seq(10);
+    numIterations <- Seq(20))
     yield baseEP.copy(
       algorithmParamsList = Seq(
         ("als", ALSAlgorithmParams(rank, numIterations, 0.01, Some(3)))))
