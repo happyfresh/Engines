@@ -19,7 +19,7 @@ class Algorithm(val ap: AlgorithmParams)
       .groupByKey()
       .map(_._2.toSet.toArray).cache()
 
-    val fpg = new FPGrowth().setMinSupport(ap.minSupport)
+    val fpg = new FPGrowth().setMinSupport(ap.minSupport).setNumPartitions(25)
     val model = fpg.run(transactions)
 
     val resultList = model.generateAssociationRules(ap.minConfidence)
