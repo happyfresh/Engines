@@ -11,7 +11,7 @@
     {
       "name": "algo",
       "params": {
-        "minSupport": 0.00008,
+        "minSupport": 0.000065,
         "minConfidence": 0.03
       }
     }

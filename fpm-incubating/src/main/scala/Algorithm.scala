@@ -23,22 +23,24 @@ class Algorithm(val ap: AlgorithmParams)
     val model = fpg.run(transactions)
 
     val resultList = model.generateAssociationRules(ap.minConfidence)
-      .map(rule => (rule.antecedent.mkString(" "), rule.consequent, rule.confidence))
+      .map(rule => (rule.antecedent.sorted.mkString(" "), rule.consequent, rule.confidence))
       .collect.toList
 
     new FPGModel(resultList)
   }
 
   def predict(model: FPGModel, query: Query): PredictedResult = {
-    val items = query.items.toList.sorted.mkString(" ")
+    val variantIds = query.items.toList.sorted
+    val keys = (1 to 3).map(i => {
+      variantIds.combinations(i).toList.map(_.sorted.mkString(" "))
+    }).flatten
+
     val result = model.resultList
-      .filter(x => {
-        x._1 == items
-      })
-      .sortBy(_._3)
-      .map(x => {
-        new ConsequentItem(x._2, x._3)
-      }).reverse.take(query.num)
+      .filter(item => keys.contains(item._1))
+      .map(item => new ConsequentItem(item._2, item._3))
+      .groupBy(_.items.mkString).values.map(_.maxBy(_.confidence))
+      .toList.sortBy(-_.confidence)
+      .take(query.num)
 
     PredictedResult(result.toArray)
   }
